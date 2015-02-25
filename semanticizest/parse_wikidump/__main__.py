@@ -1,15 +1,9 @@
-"""parse_wikidump
+"""
+Parse Wikidump
 
-Usage:
-    parse_wikidump [options] <dump> <model-filename>
-    parse_wikidump --download=<wikiname> <model-filename>
-
-Options:
-    --download=wikiname     Download dump from dumps.wikimedia.org first
-    --ngram=<order>, -N <order>
-                            Maximum order of ngrams, set to None to disable
-                            [default: 7]
-    --help, -h              This help
+Reads in a Wikipedia snapshot file, or downloads it if it doesn't exist locally.
+Then it attempts to parse it and store it in an SQL3 database, which it first
+initializes.
 """
 from __future__ import print_function
 

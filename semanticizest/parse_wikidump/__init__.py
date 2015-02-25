@@ -338,3 +338,38 @@ def parse_dump(dump, db, N=7, sentence_splitter=None, tokenizer=None):
     _logger.info("Dump parsing done: processed %d articles", i)
 
     db.commit()
+
+
+class Db(object):
+    def __init__(self, fname):
+        self.db_fname = fname
+        self.db = ""
+        
+    
+    def connect(self):
+        try:
+            self.db = sqlite3.connect(self.db_fname)
+        except sqlite3.OperationalError as e:
+            if 'unable to open' in str(e):
+                # This exception doesn't store the path.
+                die("%s: %r" % (e, self.db_fname))
+            else:
+                raise
+    
+    def disconnect(self):
+        if self.db:
+            self.db.close()
+    
+    def setup(self):
+        logger.info("Creating database at %r" % self.db_fname)
+        with open(createtables_path()) as f:
+            create = f.read()
+
+            c = self.db.cursor()
+            try:
+                c.executescript(create)
+            except sqlite3.OperationalError as e:
+                if re.search(r'table .* already exists', str(e)):
+                    die("database %r already populated" % self.db_fname)
+                else:
+                    raise
